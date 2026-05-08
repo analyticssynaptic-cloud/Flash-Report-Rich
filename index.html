@@ -459,6 +459,23 @@
   }
   .req{color:var(--red);}
 
+
+  /* OTROS ADD BLOCK */
+  .otros-add-wrap{
+    display:flex;gap:8px;
+    margin-top:10px;
+    padding-top:10px;
+    border-top:1px dashed var(--border);
+  }
+  .otros-inp{flex:1;margin-bottom:0;}
+  .otros-btn{
+    flex:0 0 auto;width:auto;padding:11px 14px;
+    font-size:.75rem;
+    border:1.5px solid var(--red);
+    color:var(--red);
+    white-space:nowrap;
+  }
+  .otros-btn:disabled{opacity:.5;cursor:not-allowed;}
   /* CAMPO OTROS PDV */
   .otros-wrap{
     margin-top:8px;
@@ -627,6 +644,10 @@
         <input class="search-inp" id="srch-vta" placeholder="Buscar producto..." oninput="filterList('vta')">
       </div>
       <div id="list-ventas"></div>
+      <div class="otros-add-wrap">
+        <input class="inp otros-inp" id="otros-inp-vta" type="text" placeholder="Agregar nuevo producto...">
+        <button class="btn btn-ghost otros-btn" type="button" onclick="agregarOtros('vta')">+ Agregar</button>
+      </div>
     </div>
 
     <div class="card">
@@ -636,6 +657,10 @@
         <input class="search-inp" id="srch-deg" placeholder="Buscar producto..." oninput="filterList('deg')">
       </div>
       <div id="list-degust"></div>
+      <div class="otros-add-wrap">
+        <input class="inp otros-inp" id="otros-inp-deg" type="text" placeholder="Agregar nuevo producto...">
+        <button class="btn btn-ghost otros-btn" type="button" onclick="agregarOtros('deg')">+ Agregar</button>
+      </div>
     </div>
   </div>
 
@@ -648,6 +673,10 @@
         <input class="search-inp" id="srch-reg" placeholder="Buscar regalo..." oninput="filterList('reg')">
       </div>
       <div id="list-regalos"></div>
+      <div class="otros-add-wrap">
+        <input class="inp otros-inp" id="otros-inp-reg" type="text" placeholder="Agregar nuevo regalo...">
+        <button class="btn btn-ghost otros-btn" type="button" onclick="agregarOtros('reg')">+ Agregar</button>
+      </div>
     </div>
   </div>
 
@@ -714,7 +743,7 @@
 // ═══════════════════════════════════════════════════════════════════
 //  CONFIG · CAMBIA AQUÍ TU URL DE DESPLIEGUE GAS SI SE REGENERA
 // ═══════════════════════════════════════════════════════════════════
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxwoizEpH6glgE7k3NoDWM8YrwRLNYPflPnI48TqwNhF7JmlQUvnfvMIbBYrKIUD9Xp/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzSG4vP9pbYsu65NfD8uCWyWncR_igELVKEZazEn0fsohLIYPdbIKIdsYuLqPPdnes6/exec";
 
 // ═══════════════ STATE ═══════════════
 const STATE = {
@@ -1206,6 +1235,59 @@ async function cerrarJornada() {
   renderListas();
   goToStep(1);
   toast('✓ Sesión cerrada · Salida registrada', 'ok');
+}
+
+// ═══════════════ AGREGAR ITEM DESDE "OTROS" ═══════════════
+async function agregarOtros(type) {
+  const inpId = 'otros-inp-' + type;
+  const btnId = 'otros-btn-' + type; // no usado directamente, usamos querySelector
+  const inp   = document.getElementById(inpId);
+  const nombre = inp.value.trim();
+  if (!nombre) { toast('Escribe el nombre primero', 'err'); inp.focus(); return; }
+
+  // tipo GAS: vta/deg → "producto", reg → "regalo"
+  const tipoGAS = type === 'reg' ? 'regalo' : 'producto';
+
+  // Verificar duplicado local
+  const listaLocal = type === 'reg' ? STATE.params.regalos : STATE.params.productos;
+  if (listaLocal.map(x => x.toLowerCase()).indexOf(nombre.toLowerCase()) !== -1) {
+    toast('Ese ítem ya está en la lista', 'err'); return;
+  }
+
+  // Deshabilitar botón mientras se guarda
+  inp.disabled = true;
+  const btn = inp.nextElementSibling;
+  btn.disabled = true;
+  btn.textContent = '...';
+
+  try {
+    const res = await postJson('agregarItem', { tipo: tipoGAS, nombre });
+    if (!res.ok) { toast('Error: ' + res.error, 'err'); return; }
+
+    // Agregar al STATE local
+    listaLocal.push(nombre);
+
+    // Agregar fila a la lista en pantalla SIN re-renderizar todo
+    const listId = type === 'vta' ? 'list-ventas' : (type === 'deg' ? 'list-degust' : 'list-regalos');
+    const listEl = document.getElementById(listId);
+    // Quitar mensaje "Sin productos" si existe
+    const emptyEl = listEl.querySelector('.empty');
+    if (emptyEl) emptyEl.remove();
+    listEl.insertAdjacentHTML('beforeend', prodRow(type, nombre));
+
+    inp.value = '';
+    if (res.agregado) {
+      toast('✓ "' + nombre + '" agregado a la lista', 'ok');
+    } else {
+      toast('"' + nombre + '" ya existía en parámetros', 'ok');
+    }
+  } catch (e) {
+    toast('Error guardando: ' + e.message, 'err');
+  } finally {
+    inp.disabled = false;
+    btn.disabled = false;
+    btn.textContent = '+ Agregar';
+  }
 }
 
 // ═══════════════ HELPERS ═══════════════
