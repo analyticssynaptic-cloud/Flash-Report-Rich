@@ -57,7 +57,6 @@
   .logo-text h1{font-size:1.5rem;font-weight:900;letter-spacing:-.03em;line-height:1;color:white;}
   .logo-text p{font-size:.62rem;font-weight:600;letter-spacing:.25em;opacity:.75;text-transform:uppercase;margin-top:3px;color:white;}
 
-  /* API STATUS PILL */
   .api-status{
     display:inline-flex;align-items:center;gap:5px;
     background:rgba(255,255,255,.12);
@@ -99,13 +98,11 @@
   .step.active .step-num{background:var(--red);color:white;}
   .step.done .step-num{background:var(--green);color:white;}
 
-  /* MAIN */
   .main{max-width:520px;margin:0 auto;padding:1rem;padding-bottom:120px;}
   .screen{display:none;}
   .screen.active{display:block;animation:fadeIn .25s ease;}
   @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
-  /* CARD */
   .card{
     background:white;
     border-radius:16px;
@@ -129,7 +126,6 @@
   }
   .card-label .dot{width:6px;height:6px;border-radius:50%;background:var(--red);}
 
-  /* INPUTS */
   .field{margin-bottom:.75rem;}
   .field:last-child{margin-bottom:0;}
   .field-label{
@@ -164,7 +160,6 @@
   }
   .sel:disabled{opacity:.55;cursor:not-allowed;}
 
-  /* LOC CHIP */
   .loc-chip{
     display:inline-flex;align-items:center;gap:6px;
     padding:8px 12px;
@@ -176,7 +171,6 @@
   .loc-chip.ok{background:var(--green-soft);border-color:rgba(46,125,91,.25);color:var(--green);}
   .loc-chip.err{background:#FDECEC;border-color:rgba(180,40,40,.2);color:#B42828;}
 
-  /* ═════ PHOTO SECTION ═════ */
   .photo-section{margin-top:8px;}
   .photo-empty{
     background:linear-gradient(135deg,var(--rose-soft),white);
@@ -273,7 +267,6 @@
     font-size:.7rem;flex-shrink:0;
   }
 
-  /* PRODUCT LIST */
   .prod-row{
     display:flex;align-items:center;justify-content:space-between;
     padding:10px 12px;
@@ -311,7 +304,6 @@
   .qty-inp::-webkit-outer-spin-button,
   .qty-inp::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
 
-  /* SEARCH BOX */
   .search-box{position:relative;margin-bottom:8px;}
   .search-inp{
     width:100%;padding:9px 12px 9px 32px;
@@ -329,7 +321,6 @@
     font-size:13px;color:var(--gray);
   }
 
-  /* SUMMARY */
   .sum-row{
     display:flex;justify-content:space-between;align-items:flex-start;
     padding:8px 0;
@@ -340,16 +331,15 @@
   .sum-label{font-size:.7rem;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:.06em;flex-shrink:0;}
   .sum-val{font-size:.82rem;color:var(--dark);font-weight:700;text-align:right;flex:1;word-break:break-word;}
 
-  .totals-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:.85rem;}
+  .totals-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:.85rem;}
   .total-card{
     background:linear-gradient(135deg,var(--rose-soft),white);
     border:1px solid var(--border);
-    border-radius:12px;padding:12px 8px;text-align:center;
+    border-radius:12px;padding:12px 6px;text-align:center;
   }
-  .total-num{font-size:1.4rem;font-weight:900;color:var(--red);line-height:1;}
-  .total-lbl{font-size:.58rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.1em;margin-top:4px;}
+  .total-num{font-size:1.25rem;font-weight:900;color:var(--red);line-height:1;}
+  .total-lbl{font-size:.55rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.08em;margin-top:4px;}
 
-  /* BUTTONS */
   .btn{
     width:100%;padding:13px;
     border:none;border-radius:12px;
@@ -381,7 +371,6 @@
   .btn-row{display:flex;gap:8px;margin-top:.85rem;}
   .btn-row .btn{flex:1;}
 
-  /* NAV BOTTOM */
   .nav-bottom{
     position:fixed;bottom:0;left:0;right:0;
     background:white;
@@ -393,7 +382,6 @@
   .nav-inner{max-width:520px;margin:0 auto;display:flex;gap:8px;}
   .nav-inner .btn{flex:1;padding:11px;font-size:.78rem;}
 
-  /* TOAST / MODAL */
   .toast{
     position:fixed;top:20px;left:50%;
     transform:translateX(-50%) translateY(-80px);
@@ -459,27 +447,76 @@
   }
   .req{color:var(--red);}
 
-
-  /* OTROS ADD BLOCK */
+  /* OTROS ADD BLOCK — v2.3: ahora con cantidad */
   .otros-add-wrap{
-    display:flex;gap:8px;
     margin-top:10px;
     padding-top:10px;
     border-top:1px dashed var(--border);
   }
-  .otros-inp{flex:1;margin-bottom:0;}
+  .otros-add-grid{
+    display:grid;
+    grid-template-columns:1fr 90px;
+    gap:8px;
+    margin-bottom:8px;
+  }
+  .otros-inp{margin-bottom:0;}
+  .otros-qty-inp{
+    margin-bottom:0;
+    text-align:center;
+    font-weight:800;
+    color:var(--red);
+  }
   .otros-btn{
-    flex:0 0 auto;width:auto;padding:11px 14px;
+    width:100%;
     font-size:.75rem;
     border:1.5px solid var(--red);
     color:var(--red);
-    white-space:nowrap;
+    padding:10px 14px;
   }
   .otros-btn:disabled{opacity:.5;cursor:not-allowed;}
+
   /* CAMPO OTROS PDV */
   .otros-wrap{
     margin-top:8px;
     animation:fadeIn .2s ease;
+  }
+
+  /* IMPACTOS DEGUSTACIÓN — v2.3 */
+  .impactos-card{
+    background:linear-gradient(135deg,var(--amber-soft),white);
+    border:1px solid rgba(176,120,32,.25);
+  }
+  .impactos-card::before{background:var(--amber);}
+  .impactos-card .card-label{color:var(--amber);}
+  .impactos-card .card-label .dot{background:var(--amber);}
+  .impactos-row{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:12px;
+    padding:12px;
+    background:white;
+    border:1.5px solid rgba(176,120,32,.2);
+    border-radius:12px;
+  }
+  .impactos-text{flex:1;}
+  .impactos-text .t1{font-size:.85rem;font-weight:800;color:var(--dark);line-height:1.2;}
+  .impactos-text .t2{font-size:.68rem;color:var(--gray);font-weight:600;margin-top:2px;}
+  .impactos-qty{
+    display:flex;align-items:center;gap:6px;
+    background:var(--amber-soft);
+    border:1.5px solid rgba(176,120,32,.3);
+    border-radius:10px;
+    padding:3px;
+    flex-shrink:0;
+  }
+  .impactos-qty .qty-btn{
+    background:white;
+    color:var(--amber);
+  }
+  .impactos-qty .qty-btn:hover{background:var(--amber);color:white;}
+  .impactos-qty .qty-inp{
+    color:var(--amber);
+    width:54px;
+    font-size:1rem;
   }
 </style>
 </head>
@@ -546,7 +583,6 @@
             <option value="">Selecciona ciudad primero</option>
           </select>
         </div>
-        <!-- Campo visible solo cuando PDV = "Otros" -->
         <div class="otros-wrap hidden" id="otros-wrap">
           <input class="inp" id="f-pdv-otros" type="text" placeholder="Escribe el nombre del PDV">
         </div>
@@ -563,7 +599,6 @@
         <label class="field-label">Foto de ingreso <span class="req">*</span></label>
 
         <div class="photo-section">
-          <!-- EMPTY STATE -->
           <div class="photo-empty" id="photo-empty">
             <div class="photo-icon-circle">
               <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -592,7 +627,6 @@
             </div>
           </div>
 
-          <!-- LOADED STATE -->
           <div class="photo-loaded hidden" id="photo-loaded">
             <div class="photo-frame">
               <img id="photo-preview" alt="Foto ingreso">
@@ -645,8 +679,11 @@
       </div>
       <div id="list-ventas"></div>
       <div class="otros-add-wrap">
-        <input class="inp otros-inp" id="otros-inp-vta" type="text" placeholder="Agregar nuevo producto...">
-        <button class="btn btn-ghost otros-btn" type="button" onclick="agregarOtros('vta')">+ Agregar</button>
+        <div class="otros-add-grid">
+          <input class="inp otros-inp" id="otros-inp-vta" type="text" placeholder="Otros: descripción del producto...">
+          <input class="inp otros-qty-inp" id="otros-qty-vta" type="number" inputmode="numeric" min="0" value="0" placeholder="Cant.">
+        </div>
+        <button class="btn btn-ghost otros-btn" type="button" onclick="agregarOtros('vta')">+ Agregar a ventas</button>
       </div>
     </div>
 
@@ -658,8 +695,28 @@
       </div>
       <div id="list-degust"></div>
       <div class="otros-add-wrap">
-        <input class="inp otros-inp" id="otros-inp-deg" type="text" placeholder="Agregar nuevo producto...">
-        <button class="btn btn-ghost otros-btn" type="button" onclick="agregarOtros('deg')">+ Agregar</button>
+        <div class="otros-add-grid">
+          <input class="inp otros-inp" id="otros-inp-deg" type="text" placeholder="Otros: descripción del producto...">
+          <input class="inp otros-qty-inp" id="otros-qty-deg" type="number" inputmode="numeric" min="0" value="0" placeholder="Cant.">
+        </div>
+        <button class="btn btn-ghost otros-btn" type="button" onclick="agregarOtros('deg')">+ Agregar a degustaciones</button>
+      </div>
+    </div>
+
+    <!-- ═════ NUEVO v2.3: IMPACTOS DE DEGUSTACIÓN ═════ -->
+    <div class="card impactos-card">
+      <div class="card-label"><span class="dot"></span>Impactos de Degustación</div>
+      <div class="impactos-row">
+        <div class="impactos-text">
+          <div class="t1">Personas impactadas</div>
+          <div class="t2">Total de personas que probaron / fueron alcanzadas</div>
+        </div>
+        <div class="impactos-qty">
+          <button class="qty-btn" type="button" onclick="adjImpactos(-1)">−</button>
+          <input class="qty-inp" id="imp-deg" type="number" inputmode="numeric" min="0" value="0"
+            onfocus="this.select()" oninput="setImpactos(this.value)">
+          <button class="qty-btn" type="button" onclick="adjImpactos(1)">+</button>
+        </div>
       </div>
     </div>
   </div>
@@ -674,8 +731,11 @@
       </div>
       <div id="list-regalos"></div>
       <div class="otros-add-wrap">
-        <input class="inp otros-inp" id="otros-inp-reg" type="text" placeholder="Agregar nuevo regalo...">
-        <button class="btn btn-ghost otros-btn" type="button" onclick="agregarOtros('reg')">+ Agregar</button>
+        <div class="otros-add-grid">
+          <input class="inp otros-inp" id="otros-inp-reg" type="text" placeholder="Otros: descripción del regalo...">
+          <input class="inp otros-qty-inp" id="otros-qty-reg" type="number" inputmode="numeric" min="0" value="0" placeholder="Cant.">
+        </div>
+        <button class="btn btn-ghost otros-btn" type="button" onclick="agregarOtros('reg')">+ Agregar a regalos</button>
       </div>
     </div>
   </div>
@@ -688,6 +748,7 @@
         <div class="total-card"><div class="total-num" id="t-vta">0</div><div class="total-lbl">Ventas</div></div>
         <div class="total-card"><div class="total-num" id="t-deg">0</div><div class="total-lbl">Degust.</div></div>
         <div class="total-card"><div class="total-num" id="t-reg">0</div><div class="total-lbl">Regalos</div></div>
+        <div class="total-card"><div class="total-num" id="t-imp" style="color:var(--amber);">0</div><div class="total-lbl">Impactos</div></div>
       </div>
 
       <div class="sect-title">Datos del Registro</div>
@@ -698,6 +759,9 @@
 
       <div class="sect-title">Degustaciones <span class="badge" id="sum-deg-c">0</span></div>
       <div id="sum-deg"></div>
+
+      <div class="sect-title">Impactos de Degustación</div>
+      <div id="sum-imp"></div>
 
       <div class="sect-title">Regalos <span class="badge" id="sum-reg-c">0</span></div>
       <div id="sum-reg2"></div>
@@ -727,10 +791,8 @@
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- OVERLAY -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <div class="spinner"></div>
@@ -743,7 +805,7 @@
 // ═══════════════════════════════════════════════════════════════════
 //  CONFIG · CAMBIA AQUÍ TU URL DE DESPLIEGUE GAS SI SE REGENERA
 // ═══════════════════════════════════════════════════════════════════
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzSG4vP9pbYsu65NfD8uCWyWncR_igELVKEZazEn0fsohLIYPdbIKIdsYuLqPPdnes6/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbw9zqRejFAKQVJHg070q0BktbuEzWKuAnbYdvkENFFiBN-teWx6JQWXFJFgfsv-aJwR/exec";
 
 // ═══════════════ STATE ═══════════════
 const STATE = {
@@ -757,7 +819,8 @@ const STATE = {
     ubicacion: "", lat: null, lng: null,
     fotoBase64: "", fotoSize: 0, fotoUrl: "", fechaHora: ""
   },
-  ventas: {}, degustaciones: {}, regalos: {}
+  ventas: {}, degustaciones: {}, regalos: {},
+  impactosDegust: 0   // ← v2.3
 };
 
 // ═══════════════ NETWORK HELPERS ═══════════════
@@ -984,6 +1047,17 @@ function filterList(type) {
   });
 }
 
+// ═══════════════ IMPACTOS DEGUSTACIÓN — v2.3 ═══════════════
+function adjImpactos(delta) {
+  const inp = document.getElementById('imp-deg');
+  const newVal = Math.max(0, (parseInt(inp.value) || 0) + delta);
+  inp.value = newVal;
+  STATE.impactosDegust = newVal;
+}
+function setImpactos(val) {
+  STATE.impactosDegust = Math.max(0, parseInt(val) || 0);
+}
+
 // ═══════════════ NAVEGACIÓN ═══════════════
 function navStep(delta) {
   const newStep = STATE.step + delta;
@@ -1058,6 +1132,7 @@ function renderResumen() {
   document.getElementById('t-vta').textContent = sumMap(STATE.ventas);
   document.getElementById('t-deg').textContent = sumMap(STATE.degustaciones);
   document.getElementById('t-reg').textContent = sumMap(STATE.regalos);
+  document.getElementById('t-imp').textContent = STATE.impactosDegust || 0;
 
   const pdvDisplay = r.pdv === 'Otros' && r.pdvOtros ? `Otros: ${r.pdvOtros}` : (r.pdv || '—');
 
@@ -1073,6 +1148,12 @@ function renderResumen() {
   document.getElementById('sum-vta').innerHTML   = renderSumList(STATE.ventas);
   document.getElementById('sum-deg').innerHTML   = renderSumList(STATE.degustaciones);
   document.getElementById('sum-reg2').innerHTML  = renderSumList(STATE.regalos);
+
+  // Impactos en el resumen
+  const imp = Number(STATE.impactosDegust || 0);
+  document.getElementById('sum-imp').innerHTML = imp > 0
+    ? `<div class="sum-row"><span class="sum-val" style="text-align:left;">Personas impactadas</span><span class="sum-val" style="flex:0 0 auto;color:var(--amber);">${imp} pers.</span></div>`
+    : '<div class="empty">Sin impactos registrados</div>';
 
   document.getElementById('sum-vta-c').textContent = Object.keys(STATE.ventas).length;
   document.getElementById('sum-deg-c').textContent = Object.keys(STATE.degustaciones).length;
@@ -1092,7 +1173,7 @@ function renderSumList(map) {
 // ═══════════════ ENVIAR TODO ═══════════════
 async function enviarTodo() {
   if (!STATE.sessionId) { toast('Falta el registro inicial', 'err'); return; }
-  showOverlay('Enviando información...', 'Guardando ventas, degustaciones y regalos');
+  showOverlay('Enviando información...', 'Guardando ventas, degustaciones, regalos e impactos');
   document.getElementById('btn-enviar').disabled = true;
 
   const ventas        = Object.keys(STATE.ventas).map(k => ({ producto: k, cantidad: STATE.ventas[k] }));
@@ -1105,13 +1186,14 @@ async function enviarTodo() {
       nombre:    STATE.registro.nombre,
       ciudad:    STATE.registro.ciudad,
       pdv:       STATE.registro.pdv === 'Otros' && STATE.registro.pdvOtros ? STATE.registro.pdvOtros : STATE.registro.pdv,
-      ventas, degustaciones, regalos
+      ventas, degustaciones, regalos,
+      impactosDegust: Number(STATE.impactosDegust || 0)   // ← v2.3
     });
     hideOverlay();
     document.getElementById('btn-enviar').disabled = false;
     if (!res.ok) { toast('Error: ' + res.error, 'err'); return; }
     STATE.cierrePOSTado = true;
-    toast(`✓ Guardado · V:${res.ventasGuardadas} D:${res.degustacionesGuardadas} R:${res.regalosGuardados}`, 'ok');
+    toast(`✓ Guardado · V:${res.ventasGuardadas} D:${res.degustacionesGuardadas} R:${res.regalosGuardados} I:${res.impactosGuardados||0}`, 'ok');
     document.getElementById('btn-enviar').textContent = '✓ Información enviada';
     document.getElementById('btn-enviar').style.background = 'linear-gradient(135deg,#2E7D5B,#1B5938)';
   } catch (e) {
@@ -1150,6 +1232,7 @@ function copyFinalWA() {
     ? Object.keys(STATE.regalos).map(k => `• ${k}: ${STATE.regalos[k]}`).join('\n') : '• Sin regalos';
 
   const pdvDisplay = r.pdv === 'Otros' && r.pdvOtros ? 'Otros: ' + r.pdvOtros : (r.pdv || '—');
+  const imp = Number(STATE.impactosDegust || 0);
 
   const txt =
 `🔴 *RICH · CIERRE DE JORNADA*
@@ -1167,6 +1250,8 @@ ${ventasTxt}
 
 🍽 *DEGUSTACIONES* (${sumMap(STATE.degustaciones)} und)
 ${degTxt}
+
+👥 *IMPACTOS DE DEGUSTACIÓN:* ${imp} personas
 
 🎁 *REGALOS* (${sumMap(STATE.regalos)} und)
 ${regTxt}
@@ -1191,11 +1276,10 @@ function fallbackCopy(txt) {
   document.body.removeChild(ta);
 }
 
-// ═══════════════ CERRAR SESIÓN (con registro de salida) ═══════════════
+// ═══════════════ CERRAR SESIÓN ═══════════════
 async function cerrarJornada() {
   if (!confirm('¿Seguro que deseas cerrar la sesión? Se registrará tu hora de salida.')) return;
 
-  // Si hay sesión activa, registrar salida en Sheets
   if (STATE.sessionId) {
     showOverlay('Registrando salida...', 'Guardando hora de cierre');
     try {
@@ -1207,10 +1291,10 @@ async function cerrarJornada() {
         totalVentas:          sumMap(STATE.ventas),
         totalDegustaciones:   sumMap(STATE.degustaciones),
         totalRegalos:         sumMap(STATE.regalos),
+        totalImpactos:        Number(STATE.impactosDegust || 0),   // ← v2.3
         observaciones:        ''
       });
     } catch (e) {
-      // Si falla el registro de salida, igual se resetea la app
       console.warn('No se pudo registrar salida:', e.message);
     }
     hideOverlay();
@@ -1220,6 +1304,7 @@ async function cerrarJornada() {
   STATE.step = 1; STATE.sessionId = null; STATE.registrado = false; STATE.cierrePOSTado = false;
   STATE.registro = { nombre:"", documento:"", ciudad:"", pdv:"", pdvOtros:"", ubicacion:"", lat:null, lng:null, fotoBase64:"", fotoSize:0, fotoUrl:"", fechaHora:"" };
   STATE.ventas = {}; STATE.degustaciones = {}; STATE.regalos = {};
+  STATE.impactosDegust = 0;
   document.getElementById('f-nombre').value  = "";
   document.getElementById('f-doc').value     = "";
   document.getElementById('f-ciudad').value  = "";
@@ -1227,6 +1312,14 @@ async function cerrarJornada() {
   document.getElementById('f-pdv').disabled  = true;
   document.getElementById('f-pdv-otros').value = "";
   document.getElementById('otros-wrap').classList.add('hidden');
+  // Reset impactos
+  const impEl = document.getElementById('imp-deg');
+  if (impEl) impEl.value = 0;
+  // Reset campos otros
+  ['vta','deg','reg'].forEach(t => {
+    const i = document.getElementById('otros-inp-'+t); if (i) i.value = '';
+    const q = document.getElementById('otros-qty-'+t); if (q) q.value = 0;
+  });
   clearFoto();
   obtenerUbicacion();
   document.getElementById('btn-enviar').disabled = false;
@@ -1237,56 +1330,65 @@ async function cerrarJornada() {
   toast('✓ Sesión cerrada · Salida registrada', 'ok');
 }
 
-// ═══════════════ AGREGAR ITEM DESDE "OTROS" ═══════════════
+// ═══════════════ AGREGAR ITEM "OTROS" — v2.3 con cantidad ═══════════════
 async function agregarOtros(type) {
   const inpId = 'otros-inp-' + type;
-  const btnId = 'otros-btn-' + type; // no usado directamente, usamos querySelector
+  const qtyId = 'otros-qty-' + type;
   const inp   = document.getElementById(inpId);
+  const qtyInp = document.getElementById(qtyId);
   const nombre = inp.value.trim();
-  if (!nombre) { toast('Escribe el nombre primero', 'err'); inp.focus(); return; }
+  const cantidad = qtyInp ? Math.max(0, parseInt(qtyInp.value) || 0) : 0;
 
-  // tipo GAS: vta/deg → "producto", reg → "regalo"
+  if (!nombre) { toast('Escribe la descripción del producto primero', 'err'); inp.focus(); return; }
+  if (cantidad <= 0) { toast('Indica la cantidad (mayor a 0)', 'err'); qtyInp.focus(); return; }
+
   const tipoGAS = type === 'reg' ? 'regalo' : 'producto';
-
-  // Verificar duplicado local
   const listaLocal = type === 'reg' ? STATE.params.regalos : STATE.params.productos;
-  if (listaLocal.map(x => x.toLowerCase()).indexOf(nombre.toLowerCase()) !== -1) {
-    toast('Ese ítem ya está en la lista', 'err'); return;
-  }
 
-  // Deshabilitar botón mientras se guarda
+  // Si ya existe en la lista, sólo actualizamos cantidad (no agregamos al catálogo)
+  const yaExiste = listaLocal.map(x => x.toLowerCase()).indexOf(nombre.toLowerCase()) !== -1;
+
   inp.disabled = true;
-  const btn = inp.nextElementSibling;
+  qtyInp.disabled = true;
+  const btn = inp.closest('.otros-add-wrap').querySelector('.otros-btn');
   btn.disabled = true;
+  const btnText = btn.textContent;
   btn.textContent = '...';
 
   try {
-    const res = await postJson('agregarItem', { tipo: tipoGAS, nombre });
-    if (!res.ok) { toast('Error: ' + res.error, 'err'); return; }
+    if (!yaExiste) {
+      // Lo agregamos al catálogo permanente
+      const res = await postJson('agregarItem', { tipo: tipoGAS, nombre });
+      if (!res.ok) { toast('Error: ' + res.error, 'err'); return; }
+      listaLocal.push(nombre);
 
-    // Agregar al STATE local
-    listaLocal.push(nombre);
-
-    // Agregar fila a la lista en pantalla SIN re-renderizar todo
-    const listId = type === 'vta' ? 'list-ventas' : (type === 'deg' ? 'list-degust' : 'list-regalos');
-    const listEl = document.getElementById(listId);
-    // Quitar mensaje "Sin productos" si existe
-    const emptyEl = listEl.querySelector('.empty');
-    if (emptyEl) emptyEl.remove();
-    listEl.insertAdjacentHTML('beforeend', prodRow(type, nombre));
-
-    inp.value = '';
-    if (res.agregado) {
-      toast('✓ "' + nombre + '" agregado a la lista', 'ok');
-    } else {
-      toast('"' + nombre + '" ya existía en parámetros', 'ok');
+      // Insertamos la fila visual
+      const listId = type === 'vta' ? 'list-ventas' : (type === 'deg' ? 'list-degust' : 'list-regalos');
+      const listEl = document.getElementById(listId);
+      const emptyEl = listEl.querySelector('.empty');
+      if (emptyEl) emptyEl.remove();
+      listEl.insertAdjacentHTML('beforeend', prodRow(type, nombre));
     }
+
+    // Tipificar cantidad: setear en STATE y reflejar en UI
+    const map = type === 'vta' ? STATE.ventas : (type === 'deg' ? STATE.degustaciones : STATE.regalos);
+    map[nombre] = cantidad;
+
+    const rowInp = document.getElementById(`${type}-${slug(nombre)}`);
+    if (rowInp) rowInp.value = cantidad;
+
+    // Limpiar inputs
+    inp.value = '';
+    qtyInp.value = 0;
+
+    toast(`✓ "${nombre}" registrado con ${cantidad} und`, 'ok');
   } catch (e) {
     toast('Error guardando: ' + e.message, 'err');
   } finally {
     inp.disabled = false;
+    qtyInp.disabled = false;
     btn.disabled = false;
-    btn.textContent = '+ Agregar';
+    btn.textContent = btnText;
   }
 }
 
