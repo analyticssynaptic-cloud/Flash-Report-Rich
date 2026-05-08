@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Rich · Captura de Ventas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red:#8B1A1F;
+    --red-deep:#5A0D14;
+    --wine:#3D0F1A;
+    --rose:#E5C8CB;
+    --rose-soft:#F8F0F1;
+    --cream:#FBF7F7;
+    --gray:#6B5A5C;
+    --gray-soft:#9C8B8D;
+    --dark:#1A0A0D;
+    --border:rgba(139,26,31,0.14);
+    --shadow-sm:0 2px 12px rgba(58,15,26,0.07);
+    --shadow-md:0 6px 24px rgba(58,15,26,0.10);
+    --shadow-lg:0 12px 32px rgba(58,15,26,0.14);
+    --green:#2E7D5B;
+    --green-soft:#E6F4ED;
+    --amber:#B07820;
+    --amber-soft:#FDF4E3;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{overflow-x:hidden;}
+  body{
+    font-family:'Outfit',-apple-system,sans-serif;
+    background:var(--cream);
+    color:var(--dark);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* HEADER */
+  .header{
+    background:linear-gradient(135deg,var(--wine) 0%,var(--red-deep) 60%,var(--red) 100%);
+    padding:1.4rem 1.25rem 1.1rem;
+    position:relative;
+  }
+  .header-inner{position:relative;z-index:1;max-width:520px;margin:0 auto;
+    display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .logo-wrap{display:flex;align-items:center;gap:12px;}
+  .logo-icon{
+    width:46px;height:46px;
+    background:rgba(255,255,255,.14);
+    border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+    border:1px solid rgba(255,255,255,.18);
+    font-size:20px;font-weight:900;color:white;
+  }
+  .logo-text h1{font-size:1.5rem;font-weight:900;letter-spacing:-.03em;line-height:1;color:white;}
+  .logo-text p{font-size:.62rem;font-weight:600;letter-spacing:.25em;opacity:.75;text-transform:uppercase;margin-top:3px;color:white;}
+
+  /* API STATUS PILL */
+  .api-status{
+    display:inline-flex;align-items:center;gap:5px;
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:20px;
+    padding:5px 10px;
+    font-size:.6rem;font-weight:700;
+    color:white;text-transform:uppercase;letter-spacing:.1em;
+  }
+  .api-dot{width:6px;height:6px;border-radius:50%;background:#FCB02D;animation:pulse 1.5s infinite;}
+  .api-status.ok .api-dot{background:#3FE3A0;animation:none;}
+  .api-status.err .api-dot{background:#FF6B6B;animation:none;}
+  @keyframes pulse{0%,100%{opacity:.5;}50%{opacity:1;}}
+
+  /* STEPS */
+  .steps{max-width:520px;margin:0 auto;padding:1rem 1rem 0;}
+  .steps-wrap{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    gap:6px;
+    background:rgba(139,26,31,.05);
+    border:1px solid var(--border);
+    border-radius:12px;padding:6px;
+  }
+  .step{
+    padding:8px 4px;text-align:center;
+    border-radius:8px;
+    font-size:.62rem;font-weight:700;
+    color:var(--gray-soft);
+    text-transform:uppercase;letter-spacing:.08em;
+    transition:all .25s;
+  }
+  .step.active{background:white;color:var(--red);box-shadow:var(--shadow-sm);}
+  .step.done{color:var(--green);}
+  .step-num{
+    display:inline-block;width:18px;height:18px;
+    border-radius:50%;background:rgba(0,0,0,.08);
+    line-height:18px;font-size:.62rem;margin-right:4px;
+  }
+  .step.active .step-num{background:var(--red);color:white;}
+  .step.done .step-num{background:var(--green);color:white;}
+
+  /* MAIN */
+  .main{max-width:520px;margin:0 auto;padding:1rem;padding-bottom:120px;}
+  .screen{display:none;}
+  .screen.active{display:block;animation:fadeIn .25s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+  /* CARD */
+  .card{
+    background:white;
+    border-radius:16px;
+    border:1px solid var(--border);
+    padding:1.1rem;
+    margin-bottom:.85rem;
+    box-shadow:var(--shadow-sm);
+    position:relative;
+    overflow:hidden;
+  }
+  .card::before{
+    content:'';position:absolute;left:0;top:0;bottom:0;
+    width:3px;background:var(--red);
+  }
+  .card-label{
+    font-size:.6rem;font-weight:800;
+    text-transform:uppercase;letter-spacing:.18em;
+    color:var(--red);
+    margin-bottom:.85rem;
+    display:flex;align-items:center;gap:6px;
+  }
+  .card-label .dot{width:6px;height:6px;border-radius:50%;background:var(--red);}
+
+  /* INPUTS */
+  .field{margin-bottom:.75rem;}
+  .field:last-child{margin-bottom:0;}
+  .field-label{
+    font-size:.65rem;font-weight:700;
+    color:var(--gray);text-transform:uppercase;
+    letter-spacing:.1em;margin-bottom:5px;display:block;
+  }
+  .inp,.sel{
+    width:100%;padding:11px 13px;
+    background:var(--rose-soft);
+    border:1.5px solid var(--border);
+    border-radius:10px;
+    font-family:'Outfit',sans-serif;
+    font-size:.88rem;font-weight:600;
+    color:var(--dark);outline:none;
+    transition:all .2s;
+    appearance:none;-webkit-appearance:none;
+  }
+  .inp:focus,.sel:focus{
+    border-color:var(--red);
+    background:white;
+    box-shadow:0 0 0 3px rgba(139,26,31,.08);
+  }
+  .sel-wrap{position:relative;}
+  .sel-wrap::after{
+    content:'';position:absolute;right:14px;top:50%;
+    transform:translateY(-50%);
+    border-left:5px solid transparent;
+    border-right:5px solid transparent;
+    border-top:6px solid var(--red);
+    pointer-events:none;
+  }
+  .sel:disabled{opacity:.55;cursor:not-allowed;}
+
+  /* LOC CHIP */
+  .loc-chip{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:8px 12px;
+    background:var(--rose-soft);
+    border:1px solid var(--border);
+    border-radius:20px;
+    font-size:.7rem;font-weight:600;color:var(--gray);
+  }
+  .loc-chip.ok{background:var(--green-soft);border-color:rgba(46,125,91,.25);color:var(--green);}
+  .loc-chip.err{background:#FDECEC;border-color:rgba(180,40,40,.2);color:#B42828;}
+
+  /* ═════ PHOTO SECTION (rediseñado) ═════ */
+  .photo-section{margin-top:8px;}
+
+  /* EMPTY STATE */
+  .photo-empty{
+    background:linear-gradient(135deg,var(--rose-soft),white);
+    border:2px dashed var(--border);
+    border-radius:16px;
+    padding:1.5rem 1.25rem 1.25rem;
+    text-align:center;
+    transition:all .2s;
+  }
+  .photo-empty:hover{border-color:var(--red);}
+  .photo-icon-circle{
+    width:64px;height:64px;
+    margin:0 auto .75rem;
+    background:linear-gradient(135deg,var(--red),var(--red-deep));
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 18px rgba(139,26,31,.25);
+    color:white;
+  }
+  .photo-title{font-size:1rem;font-weight:800;color:var(--dark);margin-bottom:4px;}
+  .photo-desc{font-size:.74rem;color:var(--gray);margin-bottom:1rem;line-height:1.45;}
+  .photo-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .photo-btn-action{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    padding:11px 8px;
+    background:linear-gradient(135deg,var(--red),var(--red-deep));
+    color:white;
+    border:none;border-radius:11px;
+    font-family:'Outfit',sans-serif;
+    font-size:.78rem;font-weight:800;
+    cursor:pointer;transition:all .2s;
+    text-transform:uppercase;letter-spacing:.06em;
+    box-shadow:0 4px 10px rgba(139,26,31,.2);
+  }
+  .photo-btn-action:active{transform:scale(.97);}
+  .photo-btn-action.ghost{
+    background:white;color:var(--red);
+    border:1.5px solid var(--border);
+    box-shadow:var(--shadow-sm);
+  }
+  .photo-btn-action.ghost:hover{border-color:var(--red);}
+
+  /* LOADED STATE */
+  .photo-loaded{margin-top:0;}
+  .photo-frame{
+    position:relative;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--shadow-md);
+    background:#000;
+    aspect-ratio:4/3;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .photo-frame img{
+    width:100%;height:100%;object-fit:cover;display:block;
+  }
+  .photo-overlay-actions{
+    position:absolute;top:10px;right:10px;
+    display:flex;gap:6px;
+  }
+  .photo-fab{
+    width:36px;height:36px;
+    border:none;border-radius:50%;
+    background:rgba(255,255,255,.95);
+    color:var(--red);
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 3px 10px rgba(0,0,0,.25);
+    transition:transform .15s,background .15s;
+  }
+  .photo-fab:hover{transform:scale(1.08);}
+  .photo-fab.danger{color:#B42828;}
+  .photo-badge{
+    position:absolute;bottom:10px;left:10px;
+    background:rgba(0,0,0,.7);
+    color:white;
+    padding:4px 10px;border-radius:14px;
+    font-size:.62rem;font-weight:700;
+    backdrop-filter:blur(6px);
+    letter-spacing:.05em;
+  }
+  .photo-status{
+    display:flex;align-items:center;gap:8px;
+    margin-top:10px;
+    padding:9px 12px;
+    background:var(--green-soft);
+    border:1px solid rgba(46,125,91,.2);
+    border-radius:10px;
+    font-size:.74rem;font-weight:700;color:var(--green);
+  }
+  .check-icon{
+    width:18px;height:18px;
+    background:var(--green);
+    color:white;
+    border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:.7rem;flex-shrink:0;
+  }
+
+  /* PRODUCT LIST */
+  .prod-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 12px;
+    background:var(--rose-soft);
+    border:1px solid var(--border);
+    border-radius:10px;
+    margin-bottom:6px;
+    gap:10px;
+  }
+  .prod-name{font-size:.82rem;font-weight:700;color:var(--dark);flex:1;line-height:1.2;}
+  .qty-wrap{
+    display:flex;align-items:center;gap:6px;
+    background:white;
+    border:1.5px solid var(--border);
+    border-radius:9px;
+    padding:2px;
+    flex-shrink:0;
+  }
+  .qty-btn{
+    width:28px;height:28px;
+    border:none;border-radius:7px;
+    background:var(--rose-soft);
+    color:var(--red);font-size:1rem;font-weight:900;
+    cursor:pointer;line-height:1;
+    transition:all .15s;
+  }
+  .qty-btn:hover{background:var(--red);color:white;}
+  .qty-inp{
+    width:42px;text-align:center;
+    border:none;background:transparent;
+    font-family:'Outfit',sans-serif;
+    font-size:.92rem;font-weight:800;color:var(--red);
+    outline:none;-moz-appearance:textfield;
+  }
+  .qty-inp::-webkit-outer-spin-button,
+  .qty-inp::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+
+  /* SEARCH BOX */
+  .search-box{position:relative;margin-bottom:8px;}
+  .search-inp{
+    width:100%;padding:9px 12px 9px 32px;
+    background:white;
+    border:1.5px solid var(--border);
+    border-radius:9px;
+    font-family:'Outfit',sans-serif;
+    font-size:.78rem;font-weight:500;
+    color:var(--dark);outline:none;
+  }
+  .search-inp:focus{border-color:var(--red);}
+  .search-icon{
+    position:absolute;left:11px;top:50%;
+    transform:translateY(-50%);
+    font-size:13px;color:var(--gray);
+  }
+
+  /* SUMMARY */
+  .sum-row{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    padding:8px 0;
+    border-bottom:1px dashed var(--border);
+    gap:12px;
+  }
+  .sum-row:last-child{border-bottom:none;}
+  .sum-label{font-size:.7rem;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:.06em;flex-shrink:0;}
+  .sum-val{font-size:.82rem;color:var(--dark);font-weight:700;text-align:right;flex:1;word-break:break-word;}
+
+  .totals-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:.85rem;}
+  .total-card{
+    background:linear-gradient(135deg,var(--rose-soft),white);
+    border:1px solid var(--border);
+    border-radius:12px;padding:12px 8px;text-align:center;
+  }
+  .total-num{font-size:1.4rem;font-weight:900;color:var(--red);line-height:1;}
+  .total-lbl{font-size:.58rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.1em;margin-top:4px;}
+
+  /* BUTTONS */
+  .btn{
+    width:100%;padding:13px;
+    border:none;border-radius:12px;
+    font-family:'Outfit',sans-serif;
+    font-size:.88rem;font-weight:800;
+    cursor:pointer;transition:all .2s;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    text-transform:uppercase;letter-spacing:.06em;
+  }
+  .btn-primary{
+    background:linear-gradient(135deg,var(--red),var(--red-deep));
+    color:white;
+    box-shadow:0 4px 12px rgba(139,26,31,.25);
+  }
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(139,26,31,.3);}
+  .btn-primary:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none;}
+  .btn-ghost{
+    background:white;color:var(--red);
+    border:1.5px solid var(--border);
+  }
+  .btn-ghost:hover{background:var(--rose-soft);border-color:var(--red);}
+  .btn-wa{
+    background:linear-gradient(135deg,#1FA855,#0E7C3A);
+    color:white;
+    box-shadow:0 4px 12px rgba(15,124,58,.22);
+  }
+  .btn-end{background:linear-gradient(135deg,#3D0F1A,var(--wine));color:white;}
+
+  .btn-row{display:flex;gap:8px;margin-top:.85rem;}
+  .btn-row .btn{flex:1;}
+
+  /* NAV BOTTOM */
+  .nav-bottom{
+    position:fixed;bottom:0;left:0;right:0;
+    background:white;
+    border-top:1px solid var(--border);
+    padding:10px 1rem;
+    z-index:50;
+    box-shadow:0 -4px 16px rgba(0,0,0,.05);
+  }
+  .nav-inner{max-width:520px;margin:0 auto;display:flex;gap:8px;}
+  .nav-inner .btn{flex:1;padding:11px;font-size:.78rem;}
+
+  /* TOAST / MODAL */
+  .toast{
+    position:fixed;top:20px;left:50%;
+    transform:translateX(-50%) translateY(-80px);
+    background:var(--dark);color:white;
+    padding:11px 18px;border-radius:10px;
+    font-size:.8rem;font-weight:600;
+    z-index:200;
+    transition:transform .3s;
+    box-shadow:0 8px 24px rgba(0,0,0,.2);
+    max-width:90%;text-align:center;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0);}
+  .toast.ok{background:var(--green);}
+  .toast.err{background:#B42828;}
+
+  .overlay{
+    position:fixed;inset:0;
+    background:rgba(20,8,10,.6);
+    backdrop-filter:blur(4px);
+    z-index:100;
+    display:none;
+    align-items:center;justify-content:center;
+    padding:1rem;
+  }
+  .overlay.show{display:flex;}
+  .modal{
+    background:white;
+    border-radius:18px;
+    max-width:420px;width:100%;
+    padding:1.5rem;
+    text-align:center;
+    box-shadow:0 12px 40px rgba(0,0,0,.3);
+  }
+  .modal-title{font-size:1.05rem;font-weight:900;color:var(--dark);margin-bottom:.4rem;}
+  .modal-sub{font-size:.78rem;color:var(--gray);line-height:1.4;}
+  .spinner{
+    width:38px;height:38px;
+    border:3px solid var(--border);
+    border-top-color:var(--red);
+    border-radius:50%;
+    animation:spin .8s linear infinite;
+    margin:0 auto 1rem;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .sect-title{
+    font-size:.7rem;font-weight:800;
+    color:var(--gray);text-transform:uppercase;
+    letter-spacing:.15em;
+    margin:1rem 0 .5rem;
+    display:flex;align-items:center;gap:8px;
+  }
+  .sect-title::before{content:'';width:18px;height:2px;background:var(--red);}
+
+  .empty{text-align:center;padding:1.5rem .5rem;color:var(--gray-soft);font-size:.78rem;}
+  .hidden{display:none!important;}
+  .badge{
+    display:inline-block;padding:2px 8px;
+    background:var(--red);color:white;
+    border-radius:10px;
+    font-size:.6rem;font-weight:800;
+    margin-left:6px;
+  }
+  .req{color:var(--red);}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="logo-wrap">
+      <div class="logo-icon">R</div>
+      <div class="logo-text">
+        <h1>Rich</h1>
+        <p>Captura de Ventas</p>
+      </div>
+    </div>
+    <div class="api-status" id="api-status">
+      <span class="api-dot"></span>
+      <span id="api-status-text">Conectando</span>
+    </div>
+  </div>
+</div>
+
+<!-- STEPS -->
+<div class="steps">
+  <div class="steps-wrap">
+    <div class="step active" id="st1"><span class="step-num">1</span>Registro</div>
+    <div class="step" id="st2"><span class="step-num">2</span>Ventas</div>
+    <div class="step" id="st3"><span class="step-num">3</span>Regalos</div>
+    <div class="step" id="st4"><span class="step-num">4</span>Cierre</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- ═════ PANTALLA 1: REGISTRO ═════ -->
+  <div class="screen active" id="sc1">
+    <div class="card">
+      <div class="card-label"><span class="dot"></span>Datos del Promotor</div>
+      <div class="field">
+        <label class="field-label">Nombre completo <span class="req">*</span></label>
+        <input class="inp" id="f-nombre" type="text" placeholder="Ej. Juan Pérez" autocomplete="name">
+      </div>
+      <div class="field">
+        <label class="field-label">Documento <span class="req">*</span></label>
+        <input class="inp" id="f-doc" type="text" inputmode="numeric" placeholder="Cédula">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label"><span class="dot"></span>Punto de Venta</div>
+      <div class="field">
+        <label class="field-label">Ciudad <span class="req">*</span></label>
+        <div class="sel-wrap">
+          <select class="sel" id="f-ciudad" disabled>
+            <option value="">Cargando...</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">PDV <span class="req">*</span></label>
+        <div class="sel-wrap">
+          <select class="sel" id="f-pdv" disabled>
+            <option value="">Selecciona ciudad primero</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label"><span class="dot"></span>Ubicación y Foto de Ingreso</div>
+      <div class="field">
+        <label class="field-label">Ubicación GPS</label>
+        <div id="loc-status"><span class="loc-chip">📍 Obteniendo ubicación...</span></div>
+      </div>
+      <div class="field">
+        <label class="field-label">Foto de ingreso <span class="req">*</span></label>
+
+        <div class="photo-section">
+          <!-- EMPTY STATE -->
+          <div class="photo-empty" id="photo-empty">
+            <div class="photo-icon-circle">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            </div>
+            <div class="photo-title">Foto del PDV</div>
+            <div class="photo-desc">Toma una foto del punto de venta o súbela desde tu galería</div>
+            <div class="photo-btns">
+              <button type="button" class="photo-btn-action" onclick="document.getElementById('inp-cam').click()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+                Cámara
+              </button>
+              <button type="button" class="photo-btn-action ghost" onclick="document.getElementById('inp-gal').click()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                Galería
+              </button>
+            </div>
+          </div>
+
+          <!-- LOADED STATE -->
+          <div class="photo-loaded hidden" id="photo-loaded">
+            <div class="photo-frame">
+              <img id="photo-preview" alt="Foto ingreso">
+              <div class="photo-overlay-actions">
+                <button type="button" class="photo-fab" onclick="document.getElementById('inp-cam').click()" title="Reemplazar">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 4 23 10 17 10"/>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                  </svg>
+                </button>
+                <button type="button" class="photo-fab danger" onclick="clearFoto()" title="Quitar">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="photo-badge"><span id="photo-size">0 KB</span></div>
+            </div>
+            <div class="photo-status">
+              <span class="check-icon">✓</span>
+              <span>Foto lista para enviar</span>
+            </div>
+          </div>
+
+          <input type="file" id="inp-cam" accept="image/*" capture="environment" hidden>
+          <input type="file" id="inp-gal" accept="image/*" hidden>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="copyRegWA()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        Copiar WA
+      </button>
+      <button class="btn btn-primary" id="btn-reg" onclick="enviarRegistro()">
+        Enviar Registro →
+      </button>
+    </div>
+  </div>
+
+  <!-- ═════ PANTALLA 2: VENTAS + DEGUSTACIONES ═════ -->
+  <div class="screen" id="sc2">
+    <div class="card">
+      <div class="card-label"><span class="dot"></span>Ventas por producto</div>
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input class="search-inp" id="srch-vta" placeholder="Buscar producto..." oninput="filterList('vta')">
+      </div>
+      <div id="list-ventas"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-label"><span class="dot"></span>Degustaciones por producto</div>
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input class="search-inp" id="srch-deg" placeholder="Buscar producto..." oninput="filterList('deg')">
+      </div>
+      <div id="list-degust"></div>
+    </div>
+  </div>
+
+  <!-- ═════ PANTALLA 3: REGALOS ═════ -->
+  <div class="screen" id="sc3">
+    <div class="card">
+      <div class="card-label"><span class="dot"></span>Regalos entregados</div>
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input class="search-inp" id="srch-reg" placeholder="Buscar regalo..." oninput="filterList('reg')">
+      </div>
+      <div id="list-regalos"></div>
+    </div>
+  </div>
+
+  <!-- ═════ PANTALLA 4: RESUMEN ═════ -->
+  <div class="screen" id="sc4">
+    <div class="card">
+      <div class="card-label"><span class="dot"></span>Resumen de jornada</div>
+      <div class="totals-grid">
+        <div class="total-card"><div class="total-num" id="t-vta">0</div><div class="total-lbl">Ventas</div></div>
+        <div class="total-card"><div class="total-num" id="t-deg">0</div><div class="total-lbl">Degust.</div></div>
+        <div class="total-card"><div class="total-num" id="t-reg">0</div><div class="total-lbl">Regalos</div></div>
+      </div>
+
+      <div class="sect-title">Datos del Registro</div>
+      <div id="sum-reg"></div>
+
+      <div class="sect-title">Ventas <span class="badge" id="sum-vta-c">0</span></div>
+      <div id="sum-vta"></div>
+
+      <div class="sect-title">Degustaciones <span class="badge" id="sum-deg-c">0</span></div>
+      <div id="sum-deg"></div>
+
+      <div class="sect-title">Regalos <span class="badge" id="sum-reg-c">0</span></div>
+      <div id="sum-reg2"></div>
+    </div>
+
+    <button class="btn btn-primary" id="btn-enviar" onclick="enviarTodo()">
+      📤 Enviar Información
+    </button>
+    <div class="btn-row">
+      <button class="btn btn-wa" onclick="copyFinalWA()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        Copiar para WhatsApp
+      </button>
+      <button class="btn btn-end" onclick="cerrarJornada()">
+        🔒 Cerrar Jornada
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- NAV BOTTOM -->
+<div class="nav-bottom" id="nav-bottom">
+  <div class="nav-inner">
+    <button class="btn btn-ghost" id="nav-back" onclick="navStep(-1)">← Atrás</button>
+    <button class="btn btn-primary" id="nav-next" onclick="navStep(1)">Siguiente →</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="spinner"></div>
+    <div class="modal-title" id="modal-title">Procesando...</div>
+    <div class="modal-sub" id="modal-sub">Por favor espera</div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+//  CONFIG · CAMBIA AQUÍ TU URL DE DESPLIEGUE GAS SI SE REGENERA
+// ═══════════════════════════════════════════════════════════════════
+const GAS_URL = "https://script.google.com/macros/s/AKfycby-vhXslNXHkZm2C4f2yb1RYPMyQKCNUZkOOztz24SwnNZf045kJmUnrdMiOpknPsA/exec";
+
+// ═══════════════ STATE ═══════════════
+const STATE = {
+  step: 1,
+  sessionId: null,
+  registrado: false,
+  params: { ciudades: [], pdvs: {}, productos: [], regalos: [] },
+  registro: {
+    nombre: "", documento: "", ciudad: "", pdv: "",
+    ubicacion: "", lat: null, lng: null,
+    fotoBase64: "", fotoSize: 0, fotoUrl: "", fechaHora: ""
+  },
+  ventas: {}, degustaciones: {}, regalos: {}
+};
+
+// ═══════════════ NETWORK HELPERS ═══════════════
+// JSONP para GET (lecturas, sin CORS)
+function jsonpGet(action, params = {}) {
+  return new Promise((resolve, reject) => {
+    const cbName = '__rich_cb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+    let script;
+    const cleanup = () => {
+      try { delete window[cbName]; } catch (e) { window[cbName] = undefined; }
+      if (script && script.parentNode) script.parentNode.removeChild(script);
+      clearTimeout(to);
+    };
+    const to = setTimeout(() => { cleanup(); reject(new Error('Timeout (30s)')); }, 30000);
+
+    window[cbName] = (data) => { cleanup(); resolve(data); };
+
+    const url = new URL(GAS_URL);
+    url.searchParams.set('action', action);
+    url.searchParams.set('callback', cbName);
+    Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+
+    script = document.createElement('script');
+    script.src = url.toString();
+    script.onerror = () => { cleanup(); reject(new Error('Error de red (JSONP)')); };
+    document.body.appendChild(script);
+  });
+}
+
+// POST JSON (sin Content-Type → text/plain → no preflight)
+async function postJson(action, payload) {
+  const body = JSON.stringify({ action, ...payload });
+  const res = await fetch(GAS_URL, {
+    method: 'POST',
+    redirect: 'follow',
+    body
+  });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return await res.json();
+}
+
+// ═══════════════ INIT ═══════════════
+window.addEventListener('DOMContentLoaded', () => {
+  pingApi();
+  cargarParametros();
+  obtenerUbicacion();
+  setupFotoInput();
+});
+
+async function pingApi() {
+  try {
+    const r = await jsonpGet('ping');
+    setApiStatus(r && r.ok ? 'ok' : 'err', r && r.ok ? 'Conectado' : 'Sin respuesta');
+  } catch (e) {
+    setApiStatus('err', 'Sin conexión');
+  }
+}
+function setApiStatus(state, text) {
+  const el = document.getElementById('api-status');
+  el.className = 'api-status ' + state;
+  document.getElementById('api-status-text').textContent = text;
+}
+
+// ═══════════════ PARAMETROS ═══════════════
+async function cargarParametros() {
+  try {
+    const r = await jsonpGet('getParametros');
+    if (!r || !r.ok) { toast('Error parámetros: ' + (r && r.error), 'err'); return; }
+    STATE.params = { ciudades: r.ciudades, pdvs: r.pdvs, productos: r.productos, regalos: r.regalos };
+    llenarCiudades();
+    renderListas();
+  } catch (e) {
+    toast('Error cargando parámetros: ' + e.message, 'err');
+  }
+}
+
+function llenarCiudades() {
+  const sel = document.getElementById('f-ciudad');
+  sel.disabled = false;
+  sel.innerHTML = '<option value="">Selecciona ciudad</option>' +
+    STATE.params.ciudades.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  sel.onchange = () => { STATE.registro.ciudad = sel.value; llenarPDVs(sel.value); };
+}
+
+function llenarPDVs(ciudad) {
+  const sel = document.getElementById('f-pdv');
+  if (!ciudad) {
+    sel.disabled = true;
+    sel.innerHTML = '<option value="">Selecciona ciudad primero</option>';
+    return;
+  }
+  const pdvs = STATE.params.pdvs[ciudad] || [];
+  sel.disabled = false;
+  sel.innerHTML = '<option value="">Selecciona PDV</option>' +
+    pdvs.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('');
+  sel.onchange = () => { STATE.registro.pdv = sel.value; };
+}
+
+// ═══════════════ UBICACIÓN ═══════════════
+function obtenerUbicacion() {
+  const el = document.getElementById('loc-status');
+  if (!navigator.geolocation) {
+    el.innerHTML = '<span class="loc-chip err">📍 GPS no disponible</span>';
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      STATE.registro.lat = pos.coords.latitude;
+      STATE.registro.lng = pos.coords.longitude;
+      STATE.registro.ubicacion = `${pos.coords.latitude.toFixed(6)},${pos.coords.longitude.toFixed(6)}`;
+      el.innerHTML = `<span class="loc-chip ok">📍 Ubicación capturada ✓</span>`;
+    },
+    () => { el.innerHTML = '<span class="loc-chip err">📍 Permiso denegado</span>'; },
+    { enableHighAccuracy: true, timeout: 15000 }
+  );
+}
+
+// ═══════════════ FOTO ═══════════════
+function setupFotoInput() {
+  ['inp-cam','inp-gal'].forEach(id => {
+    document.getElementById(id).addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 10 * 1024 * 1024) {
+        toast('La foto excede 10MB. Usa una más liviana.', 'err');
+        e.target.value = '';
+        return;
+      }
+      showOverlay('Procesando foto...', 'Comprimiendo imagen');
+      const reader = new FileReader();
+      reader.onload = ev => {
+        compressImage(ev.target.result, 1280, 0.82, dataUrl => {
+          STATE.registro.fotoBase64 = dataUrl;
+          STATE.registro.fotoSize = Math.round(dataUrl.length * 0.75); // approx bytes
+          renderFotoPreview(dataUrl);
+          hideOverlay();
+        });
+      };
+      reader.onerror = () => { hideOverlay(); toast('Error leyendo archivo', 'err'); };
+      reader.readAsDataURL(file);
+      // Reset input para permitir mismo archivo después
+      e.target.value = '';
+    });
+  });
+}
+
+function compressImage(dataUrl, maxW, quality, cb) {
+  const img = new Image();
+  img.onload = () => {
+    let w = img.width, h = img.height;
+    if (w > maxW) { h = h * (maxW / w); w = maxW; }
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, w, h);
+    cb(canvas.toDataURL('image/jpeg', quality));
+  };
+  img.onerror = () => cb(dataUrl);
+  img.src = dataUrl;
+}
+
+function renderFotoPreview(dataUrl) {
+  document.getElementById('photo-preview').src = dataUrl;
+  document.getElementById('photo-empty').classList.add('hidden');
+  document.getElementById('photo-loaded').classList.remove('hidden');
+  const kb = Math.round(STATE.registro.fotoSize / 1024);
+  document.getElementById('photo-size').textContent = kb >= 1024 ? (kb/1024).toFixed(1) + ' MB' : kb + ' KB';
+}
+
+function clearFoto() {
+  STATE.registro.fotoBase64 = "";
+  STATE.registro.fotoSize = 0;
+  document.getElementById('photo-empty').classList.remove('hidden');
+  document.getElementById('photo-loaded').classList.add('hidden');
+  document.getElementById('photo-preview').src = '';
+}
+
+// ═══════════════ LISTAS ═══════════════
+function renderListas() {
+  document.getElementById('list-ventas').innerHTML = STATE.params.productos.map(p => prodRow('vta', p)).join('') || emptyMsg('Sin productos');
+  document.getElementById('list-degust').innerHTML = STATE.params.productos.map(p => prodRow('deg', p)).join('') || emptyMsg('Sin productos');
+  document.getElementById('list-regalos').innerHTML = STATE.params.regalos.map(r => prodRow('reg', r)).join('') || emptyMsg('Sin regalos');
+}
+
+function prodRow(type, name) {
+  const id = `${type}-${slug(name)}`;
+  return `
+    <div class="prod-row" data-name="${esc(name).toLowerCase()}">
+      <div class="prod-name">${esc(name)}</div>
+      <div class="qty-wrap">
+        <button class="qty-btn" type="button" onclick="adj('${type}','${esc(name)}',-1)">−</button>
+        <input class="qty-inp" id="${id}" type="number" inputmode="numeric" min="0" value="0"
+          onfocus="this.select()" oninput="setQty('${type}','${esc(name)}',this.value)">
+        <button class="qty-btn" type="button" onclick="adj('${type}','${esc(name)}',1)">+</button>
+      </div>
+    </div>`;
+}
+
+function adj(type, name, delta) {
+  const inp = document.getElementById(`${type}-${slug(name)}`);
+  const newVal = Math.max(0, (parseInt(inp.value) || 0) + delta);
+  inp.value = newVal;
+  setQty(type, name, newVal);
+}
+
+function setQty(type, name, val) {
+  const n = Math.max(0, parseInt(val) || 0);
+  const map = type === 'vta' ? STATE.ventas : (type === 'deg' ? STATE.degustaciones : STATE.regalos);
+  if (n === 0) delete map[name]; else map[name] = n;
+}
+
+function filterList(type) {
+  const q = document.getElementById(`srch-${type}`).value.toLowerCase().trim();
+  const cId = type === 'vta' ? 'list-ventas' : (type === 'deg' ? 'list-degust' : 'list-regalos');
+  document.querySelectorAll(`#${cId} .prod-row`).forEach(row => {
+    row.style.display = row.dataset.name.includes(q) ? '' : 'none';
+  });
+}
+
+// ═══════════════ NAVEGACIÓN ═══════════════
+function navStep(delta) {
+  const newStep = STATE.step + delta;
+  if (newStep < 1 || newStep > 4) return;
+  if (delta > 0 && STATE.step === 1 && !STATE.registrado) {
+    toast('Primero envía el registro inicial', 'err');
+    return;
+  }
+  goToStep(newStep);
+}
+
+function goToStep(n) {
+  STATE.step = n;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(`sc${n}`).classList.add('active');
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById(`st${i}`);
+    el.classList.remove('active', 'done');
+    if (i === n) el.classList.add('active');
+    else if (i < n) el.classList.add('done');
+  }
+  document.getElementById('nav-back').style.visibility = n === 1 ? 'hidden' : 'visible';
+  document.getElementById('nav-next').style.visibility = n === 4 ? 'hidden' : 'visible';
+  if (n === 4) renderResumen();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ═══════════════ ENVIAR REGISTRO ═══════════════
+async function enviarRegistro() {
+  const r = STATE.registro;
+  r.nombre = document.getElementById('f-nombre').value.trim();
+  r.documento = document.getElementById('f-doc').value.trim();
+  r.ciudad = document.getElementById('f-ciudad').value;
+  r.pdv = document.getElementById('f-pdv').value;
+
+  if (!r.nombre)        return toast('Ingresa tu nombre', 'err');
+  if (!r.documento)     return toast('Ingresa tu documento', 'err');
+  if (!r.ciudad)        return toast('Selecciona ciudad', 'err');
+  if (!r.pdv)           return toast('Selecciona PDV', 'err');
+  if (!r.fotoBase64)    return toast('Toma o sube una foto de ingreso', 'err');
+
+  showOverlay('Subiendo registro...', 'Guardando foto y datos');
+  document.getElementById('btn-reg').disabled = true;
+
+  try {
+    const res = await postJson('registrarIngreso', {
+      nombre: r.nombre, documento: r.documento,
+      ciudad: r.ciudad, pdv: r.pdv,
+      ubicacion: r.ubicacion, fotoBase64: r.fotoBase64
+    });
+    hideOverlay();
+    document.getElementById('btn-reg').disabled = false;
+    if (!res.ok) { toast('Error: ' + res.error, 'err'); return; }
+    STATE.sessionId = res.sessionId;
+    STATE.registro.fotoUrl = res.fotoUrl;
+    STATE.registro.fechaHora = res.fechaHora;
+    STATE.registrado = true;
+    toast('✓ Registro enviado correctamente', 'ok');
+    goToStep(2);
+  } catch (e) {
+    hideOverlay();
+    document.getElementById('btn-reg').disabled = false;
+    toast('Error: ' + e.message, 'err');
+  }
+}
+
+// ═══════════════ RESUMEN ═══════════════
+function renderResumen() {
+  const r = STATE.registro;
+  document.getElementById('t-vta').textContent = sumMap(STATE.ventas);
+  document.getElementById('t-deg').textContent = sumMap(STATE.degustaciones);
+  document.getElementById('t-reg').textContent = sumMap(STATE.regalos);
+
+  document.getElementById('sum-reg').innerHTML = `
+    <div class="sum-row"><span class="sum-label">Nombre</span><span class="sum-val">${esc(r.nombre)}</span></div>
+    <div class="sum-row"><span class="sum-label">Documento</span><span class="sum-val">${esc(r.documento)}</span></div>
+    <div class="sum-row"><span class="sum-label">Ciudad</span><span class="sum-val">${esc(r.ciudad)}</span></div>
+    <div class="sum-row"><span class="sum-label">PDV</span><span class="sum-val">${esc(r.pdv)}</span></div>
+    <div class="sum-row"><span class="sum-label">Ubicación</span><span class="sum-val">${esc(r.ubicacion || '—')}</span></div>
+    <div class="sum-row"><span class="sum-label">Foto</span><span class="sum-val">${r.fotoUrl ? '<a href="'+r.fotoUrl+'" target="_blank" style="color:var(--red);text-decoration:none;font-weight:700;">Ver foto ↗</a>' : '—'}</span></div>
+  `;
+
+  document.getElementById('sum-vta').innerHTML = renderSumList(STATE.ventas);
+  document.getElementById('sum-deg').innerHTML = renderSumList(STATE.degustaciones);
+  document.getElementById('sum-reg2').innerHTML = renderSumList(STATE.regalos);
+
+  document.getElementById('sum-vta-c').textContent = Object.keys(STATE.ventas).length;
+  document.getElementById('sum-deg-c').textContent = Object.keys(STATE.degustaciones).length;
+  document.getElementById('sum-reg-c').textContent = Object.keys(STATE.regalos).length;
+}
+
+function renderSumList(map) {
+  const keys = Object.keys(map);
+  if (!keys.length) return '<div class="empty">Sin registros</div>';
+  return keys.map(k => `
+    <div class="sum-row">
+      <span class="sum-val" style="text-align:left;">${esc(k)}</span>
+      <span class="sum-val" style="flex:0 0 auto;color:var(--red);">${map[k]} und</span>
+    </div>`).join('');
+}
+
+// ═══════════════ ENVIAR TODO ═══════════════
+async function enviarTodo() {
+  if (!STATE.sessionId) { toast('Falta el registro inicial', 'err'); return; }
+  showOverlay('Enviando información...', 'Guardando ventas, degustaciones y regalos');
+  document.getElementById('btn-enviar').disabled = true;
+
+  const ventas = Object.keys(STATE.ventas).map(k => ({ producto: k, cantidad: STATE.ventas[k] }));
+  const degustaciones = Object.keys(STATE.degustaciones).map(k => ({ producto: k, cantidad: STATE.degustaciones[k] }));
+  const regalos = Object.keys(STATE.regalos).map(k => ({ regalo: k, cantidad: STATE.regalos[k] }));
+
+  try {
+    const res = await postJson('registrarCierre', {
+      sessionId: STATE.sessionId,
+      nombre: STATE.registro.nombre,
+      ciudad: STATE.registro.ciudad,
+      pdv: STATE.registro.pdv,
+      ventas, degustaciones, regalos
+    });
+    hideOverlay();
+    document.getElementById('btn-enviar').disabled = false;
+    if (!res.ok) { toast('Error: ' + res.error, 'err'); return; }
+    toast(`✓ Guardado · V:${res.ventasGuardadas} D:${res.degustacionesGuardadas} R:${res.regalosGuardados}`, 'ok');
+    document.getElementById('btn-enviar').textContent = '✓ Información enviada';
+    document.getElementById('btn-enviar').style.background = 'linear-gradient(135deg,#2E7D5B,#1B5938)';
+  } catch (e) {
+    hideOverlay();
+    document.getElementById('btn-enviar').disabled = false;
+    toast('Error: ' + e.message, 'err');
+  }
+}
+
+// ═══════════════ COPIAR WHATSAPP ═══════════════
+function copyRegWA() {
+  const r = STATE.registro;
+  r.nombre    = r.nombre    || document.getElementById('f-nombre').value.trim();
+  r.documento = r.documento || document.getElementById('f-doc').value.trim();
+  r.ciudad    = r.ciudad    || document.getElementById('f-ciudad').value;
+  r.pdv       = r.pdv       || document.getElementById('f-pdv').value;
+  const txt =
+`🔴 *RICH · INGRESO*
+━━━━━━━━━━━━━━━━━━
+👤 *Promotor:* ${r.nombre || '—'}
+🆔 *Documento:* ${r.documento || '—'}
+🏙 *Ciudad:* ${r.ciudad || '—'}
+🏪 *PDV:* ${r.pdv || '—'}
+📍 *Ubicación:* ${r.ubicacion || 'Sin GPS'}
+🕐 *Hora:* ${formatHora(new Date())}`;
+  copyText(txt);
+}
+
+function copyFinalWA() {
+  const r = STATE.registro;
+  const ventasTxt = Object.keys(STATE.ventas).length
+    ? Object.keys(STATE.ventas).map(k => `• ${k}: ${STATE.ventas[k]}`).join('\n') : '• Sin ventas';
+  const degTxt = Object.keys(STATE.degustaciones).length
+    ? Object.keys(STATE.degustaciones).map(k => `• ${k}: ${STATE.degustaciones[k]}`).join('\n') : '• Sin degustaciones';
+  const regTxt = Object.keys(STATE.regalos).length
+    ? Object.keys(STATE.regalos).map(k => `• ${k}: ${STATE.regalos[k]}`).join('\n') : '• Sin regalos';
+
+  const txt =
+`🔴 *RICH · CIERRE DE JORNADA*
+━━━━━━━━━━━━━━━━━━
+👤 *Promotor:* ${r.nombre}
+🆔 *Documento:* ${r.documento}
+🏙 *Ciudad:* ${r.ciudad}
+🏪 *PDV:* ${r.pdv}
+📍 *Ubicación:* ${r.ubicacion || 'Sin GPS'}
+🕐 *Cierre:* ${formatHora(new Date())}
+${r.fotoUrl ? '📷 *Foto ingreso:* ' + r.fotoUrl : ''}
+
+🛒 *VENTAS* (${sumMap(STATE.ventas)} und)
+${ventasTxt}
+
+🍽 *DEGUSTACIONES* (${sumMap(STATE.degustaciones)} und)
+${degTxt}
+
+🎁 *REGALOS* (${sumMap(STATE.regalos)} und)
+${regTxt}
+━━━━━━━━━━━━━━━━━━`;
+  copyText(txt);
+}
+
+function copyText(txt) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(txt).then(
+      () => toast('✓ Copiado · Pégalo en WhatsApp', 'ok'),
+      () => fallbackCopy(txt)
+    );
+  } else fallbackCopy(txt);
+}
+function fallbackCopy(txt) {
+  const ta = document.createElement('textarea');
+  ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); toast('✓ Copiado', 'ok'); }
+  catch (e) { toast('No se pudo copiar', 'err'); }
+  document.body.removeChild(ta);
+}
+
+// ═══════════════ CERRAR JORNADA ═══════════════
+function cerrarJornada() {
+  if (!confirm('¿Seguro que deseas cerrar la jornada? Se reiniciará la aplicación.')) return;
+  STATE.step = 1; STATE.sessionId = null; STATE.registrado = false;
+  STATE.registro = { nombre:"", documento:"", ciudad:"", pdv:"", ubicacion:"", lat:null, lng:null, fotoBase64:"", fotoSize:0, fotoUrl:"", fechaHora:"" };
+  STATE.ventas = {}; STATE.degustaciones = {}; STATE.regalos = {};
+  document.getElementById('f-nombre').value = "";
+  document.getElementById('f-doc').value = "";
+  document.getElementById('f-ciudad').value = "";
+  document.getElementById('f-pdv').innerHTML = '<option value="">Selecciona ciudad primero</option>';
+  document.getElementById('f-pdv').disabled = true;
+  clearFoto();
+  obtenerUbicacion();
+  document.getElementById('btn-enviar').disabled = false;
+  document.getElementById('btn-enviar').textContent = '📤 Enviar Información';
+  document.getElementById('btn-enviar').style.background = '';
+  renderListas();
+  goToStep(1);
+  toast('Jornada cerrada · Listo para nuevo registro', 'ok');
+}
+
+// ═══════════════ HELPERS ═══════════════
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function slug(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+function sumMap(m) { return Object.values(m).reduce((a,b) => a + Number(b||0), 0); }
+function emptyMsg(t) { return `<div class="empty">${t}</div>`; }
+function formatHora(d) {
+  return d.toLocaleString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+
+let toastTimer = null;
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.classList.remove('show'); }, 3200);
+}
+function showOverlay(title, sub) {
+  document.getElementById('modal-title').textContent = title || 'Procesando...';
+  document.getElementById('modal-sub').textContent = sub || '';
+  document.getElementById('overlay').classList.add('show');
+}
+function hideOverlay() { document.getElementById('overlay').classList.remove('show'); }
+</script>
+</body>
+</html>
