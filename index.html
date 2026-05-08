@@ -176,10 +176,8 @@
   .loc-chip.ok{background:var(--green-soft);border-color:rgba(46,125,91,.25);color:var(--green);}
   .loc-chip.err{background:#FDECEC;border-color:rgba(180,40,40,.2);color:#B42828;}
 
-  /* ═════ PHOTO SECTION (rediseñado) ═════ */
+  /* ═════ PHOTO SECTION ═════ */
   .photo-section{margin-top:8px;}
-
-  /* EMPTY STATE */
   .photo-empty{
     background:linear-gradient(135deg,var(--rose-soft),white);
     border:2px dashed var(--border);
@@ -221,7 +219,6 @@
   }
   .photo-btn-action.ghost:hover{border-color:var(--red);}
 
-  /* LOADED STATE */
   .photo-loaded{margin-top:0;}
   .photo-frame{
     position:relative;
@@ -232,9 +229,7 @@
     aspect-ratio:4/3;
     display:flex;align-items:center;justify-content:center;
   }
-  .photo-frame img{
-    width:100%;height:100%;object-fit:cover;display:block;
-  }
+  .photo-frame img{width:100%;height:100%;object-fit:cover;display:block;}
   .photo-overlay-actions{
     position:absolute;top:10px;right:10px;
     display:flex;gap:6px;
@@ -463,6 +458,12 @@
     margin-left:6px;
   }
   .req{color:var(--red);}
+
+  /* CAMPO OTROS PDV */
+  .otros-wrap{
+    margin-top:8px;
+    animation:fadeIn .2s ease;
+  }
 </style>
 </head>
 <body>
@@ -527,6 +528,10 @@
           <select class="sel" id="f-pdv" disabled>
             <option value="">Selecciona ciudad primero</option>
           </select>
+        </div>
+        <!-- Campo visible solo cuando PDV = "Otros" -->
+        <div class="otros-wrap hidden" id="otros-wrap">
+          <input class="inp" id="f-pdv-otros" type="text" placeholder="Escribe el nombre del PDV">
         </div>
       </div>
     </div>
@@ -678,7 +683,7 @@
         Copiar para WhatsApp
       </button>
       <button class="btn btn-end" onclick="cerrarJornada()">
-        🔒 Cerrar Jornada
+        🔒 Cerrar Sesión
       </button>
     </div>
   </div>
@@ -709,16 +714,17 @@
 // ═══════════════════════════════════════════════════════════════════
 //  CONFIG · CAMBIA AQUÍ TU URL DE DESPLIEGUE GAS SI SE REGENERA
 // ═══════════════════════════════════════════════════════════════════
-const GAS_URL = "https://script.google.com/macros/s/AKfycby-vhXslNXHkZm2C4f2yb1RYPMyQKCNUZkOOztz24SwnNZf045kJmUnrdMiOpknPsA/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxwoizEpH6glgE7k3NoDWM8YrwRLNYPflPnI48TqwNhF7JmlQUvnfvMIbBYrKIUD9Xp/exec";
 
 // ═══════════════ STATE ═══════════════
 const STATE = {
   step: 1,
   sessionId: null,
   registrado: false,
+  cierrePOSTado: false,
   params: { ciudades: [], pdvs: {}, productos: [], regalos: [] },
   registro: {
-    nombre: "", documento: "", ciudad: "", pdv: "",
+    nombre: "", documento: "", ciudad: "", pdv: "", pdvOtros: "",
     ubicacion: "", lat: null, lng: null,
     fotoBase64: "", fotoSize: 0, fotoUrl: "", fechaHora: ""
   },
@@ -726,7 +732,6 @@ const STATE = {
 };
 
 // ═══════════════ NETWORK HELPERS ═══════════════
-// JSONP para GET (lecturas, sin CORS)
 function jsonpGet(action, params = {}) {
   return new Promise((resolve, reject) => {
     const cbName = '__rich_cb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
@@ -737,14 +742,11 @@ function jsonpGet(action, params = {}) {
       clearTimeout(to);
     };
     const to = setTimeout(() => { cleanup(); reject(new Error('Timeout (30s)')); }, 30000);
-
     window[cbName] = (data) => { cleanup(); resolve(data); };
-
     const url = new URL(GAS_URL);
     url.searchParams.set('action', action);
     url.searchParams.set('callback', cbName);
     Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-
     script = document.createElement('script');
     script.src = url.toString();
     script.onerror = () => { cleanup(); reject(new Error('Error de red (JSONP)')); };
@@ -752,7 +754,6 @@ function jsonpGet(action, params = {}) {
   });
 }
 
-// POST JSON (sin Content-Type → text/plain → no preflight)
 async function postJson(action, payload) {
   const body = JSON.stringify({ action, ...payload });
   const res = await fetch(GAS_URL, {
@@ -812,13 +813,26 @@ function llenarPDVs(ciudad) {
   if (!ciudad) {
     sel.disabled = true;
     sel.innerHTML = '<option value="">Selecciona ciudad primero</option>';
+    document.getElementById('otros-wrap').classList.add('hidden');
     return;
   }
   const pdvs = STATE.params.pdvs[ciudad] || [];
   sel.disabled = false;
   sel.innerHTML = '<option value="">Selecciona PDV</option>' +
     pdvs.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('');
-  sel.onchange = () => { STATE.registro.pdv = sel.value; };
+  sel.onchange = () => {
+    STATE.registro.pdv = sel.value;
+    const otrosWrap = document.getElementById('otros-wrap');
+    if (sel.value === 'Otros') {
+      otrosWrap.classList.remove('hidden');
+      document.getElementById('f-pdv-otros').focus();
+    } else {
+      otrosWrap.classList.add('hidden');
+      document.getElementById('f-pdv-otros').value = '';
+      STATE.registro.pdvOtros = '';
+    }
+  };
+  document.getElementById('otros-wrap').classList.add('hidden');
 }
 
 // ═══════════════ UBICACIÓN ═══════════════
@@ -856,14 +870,13 @@ function setupFotoInput() {
       reader.onload = ev => {
         compressImage(ev.target.result, 1280, 0.82, dataUrl => {
           STATE.registro.fotoBase64 = dataUrl;
-          STATE.registro.fotoSize = Math.round(dataUrl.length * 0.75); // approx bytes
+          STATE.registro.fotoSize = Math.round(dataUrl.length * 0.75);
           renderFotoPreview(dataUrl);
           hideOverlay();
         });
       };
       reader.onerror = () => { hideOverlay(); toast('Error leyendo archivo', 'err'); };
       reader.readAsDataURL(file);
-      // Reset input para permitir mismo archivo después
       e.target.value = '';
     });
   });
@@ -972,16 +985,18 @@ function goToStep(n) {
 // ═══════════════ ENVIAR REGISTRO ═══════════════
 async function enviarRegistro() {
   const r = STATE.registro;
-  r.nombre = document.getElementById('f-nombre').value.trim();
+  r.nombre    = document.getElementById('f-nombre').value.trim();
   r.documento = document.getElementById('f-doc').value.trim();
-  r.ciudad = document.getElementById('f-ciudad').value;
-  r.pdv = document.getElementById('f-pdv').value;
+  r.ciudad    = document.getElementById('f-ciudad').value;
+  r.pdv       = document.getElementById('f-pdv').value;
+  r.pdvOtros  = document.getElementById('f-pdv-otros').value.trim();
 
-  if (!r.nombre)        return toast('Ingresa tu nombre', 'err');
-  if (!r.documento)     return toast('Ingresa tu documento', 'err');
-  if (!r.ciudad)        return toast('Selecciona ciudad', 'err');
-  if (!r.pdv)           return toast('Selecciona PDV', 'err');
-  if (!r.fotoBase64)    return toast('Toma o sube una foto de ingreso', 'err');
+  if (!r.nombre)     return toast('Ingresa tu nombre', 'err');
+  if (!r.documento)  return toast('Ingresa tu documento', 'err');
+  if (!r.ciudad)     return toast('Selecciona ciudad', 'err');
+  if (!r.pdv)        return toast('Selecciona PDV', 'err');
+  if (r.pdv === 'Otros' && !r.pdvOtros) return toast('Escribe el nombre del PDV', 'err');
+  if (!r.fotoBase64) return toast('Toma o sube una foto de ingreso', 'err');
 
   showOverlay('Subiendo registro...', 'Guardando foto y datos');
   document.getElementById('btn-reg').disabled = true;
@@ -989,7 +1004,7 @@ async function enviarRegistro() {
   try {
     const res = await postJson('registrarIngreso', {
       nombre: r.nombre, documento: r.documento,
-      ciudad: r.ciudad, pdv: r.pdv,
+      ciudad: r.ciudad, pdv: r.pdv, pdvOtros: r.pdvOtros,
       ubicacion: r.ubicacion, fotoBase64: r.fotoBase64
     });
     hideOverlay();
@@ -1015,18 +1030,20 @@ function renderResumen() {
   document.getElementById('t-deg').textContent = sumMap(STATE.degustaciones);
   document.getElementById('t-reg').textContent = sumMap(STATE.regalos);
 
+  const pdvDisplay = r.pdv === 'Otros' && r.pdvOtros ? `Otros: ${r.pdvOtros}` : (r.pdv || '—');
+
   document.getElementById('sum-reg').innerHTML = `
     <div class="sum-row"><span class="sum-label">Nombre</span><span class="sum-val">${esc(r.nombre)}</span></div>
     <div class="sum-row"><span class="sum-label">Documento</span><span class="sum-val">${esc(r.documento)}</span></div>
     <div class="sum-row"><span class="sum-label">Ciudad</span><span class="sum-val">${esc(r.ciudad)}</span></div>
-    <div class="sum-row"><span class="sum-label">PDV</span><span class="sum-val">${esc(r.pdv)}</span></div>
+    <div class="sum-row"><span class="sum-label">PDV</span><span class="sum-val">${esc(pdvDisplay)}</span></div>
     <div class="sum-row"><span class="sum-label">Ubicación</span><span class="sum-val">${esc(r.ubicacion || '—')}</span></div>
     <div class="sum-row"><span class="sum-label">Foto</span><span class="sum-val">${r.fotoUrl ? '<a href="'+r.fotoUrl+'" target="_blank" style="color:var(--red);text-decoration:none;font-weight:700;">Ver foto ↗</a>' : '—'}</span></div>
   `;
 
-  document.getElementById('sum-vta').innerHTML = renderSumList(STATE.ventas);
-  document.getElementById('sum-deg').innerHTML = renderSumList(STATE.degustaciones);
-  document.getElementById('sum-reg2').innerHTML = renderSumList(STATE.regalos);
+  document.getElementById('sum-vta').innerHTML   = renderSumList(STATE.ventas);
+  document.getElementById('sum-deg').innerHTML   = renderSumList(STATE.degustaciones);
+  document.getElementById('sum-reg2').innerHTML  = renderSumList(STATE.regalos);
 
   document.getElementById('sum-vta-c').textContent = Object.keys(STATE.ventas).length;
   document.getElementById('sum-deg-c').textContent = Object.keys(STATE.degustaciones).length;
@@ -1049,21 +1066,22 @@ async function enviarTodo() {
   showOverlay('Enviando información...', 'Guardando ventas, degustaciones y regalos');
   document.getElementById('btn-enviar').disabled = true;
 
-  const ventas = Object.keys(STATE.ventas).map(k => ({ producto: k, cantidad: STATE.ventas[k] }));
+  const ventas        = Object.keys(STATE.ventas).map(k => ({ producto: k, cantidad: STATE.ventas[k] }));
   const degustaciones = Object.keys(STATE.degustaciones).map(k => ({ producto: k, cantidad: STATE.degustaciones[k] }));
-  const regalos = Object.keys(STATE.regalos).map(k => ({ regalo: k, cantidad: STATE.regalos[k] }));
+  const regalos       = Object.keys(STATE.regalos).map(k => ({ regalo: k, cantidad: STATE.regalos[k] }));
 
   try {
     const res = await postJson('registrarCierre', {
       sessionId: STATE.sessionId,
-      nombre: STATE.registro.nombre,
-      ciudad: STATE.registro.ciudad,
-      pdv: STATE.registro.pdv,
+      nombre:    STATE.registro.nombre,
+      ciudad:    STATE.registro.ciudad,
+      pdv:       STATE.registro.pdv === 'Otros' && STATE.registro.pdvOtros ? STATE.registro.pdvOtros : STATE.registro.pdv,
       ventas, degustaciones, regalos
     });
     hideOverlay();
     document.getElementById('btn-enviar').disabled = false;
     if (!res.ok) { toast('Error: ' + res.error, 'err'); return; }
+    STATE.cierrePOSTado = true;
     toast(`✓ Guardado · V:${res.ventasGuardadas} D:${res.degustacionesGuardadas} R:${res.regalosGuardados}`, 'ok');
     document.getElementById('btn-enviar').textContent = '✓ Información enviada';
     document.getElementById('btn-enviar').style.background = 'linear-gradient(135deg,#2E7D5B,#1B5938)';
@@ -1087,7 +1105,7 @@ function copyRegWA() {
 👤 *Promotor:* ${r.nombre || '—'}
 🆔 *Documento:* ${r.documento || '—'}
 🏙 *Ciudad:* ${r.ciudad || '—'}
-🏪 *PDV:* ${r.pdv || '—'}
+🏪 *PDV:* ${r.pdv === 'Otros' && r.pdvOtros ? 'Otros: ' + r.pdvOtros : (r.pdv || '—')}
 📍 *Ubicación:* ${r.ubicacion || 'Sin GPS'}
 🕐 *Hora:* ${formatHora(new Date())}`;
   copyText(txt);
@@ -1102,13 +1120,15 @@ function copyFinalWA() {
   const regTxt = Object.keys(STATE.regalos).length
     ? Object.keys(STATE.regalos).map(k => `• ${k}: ${STATE.regalos[k]}`).join('\n') : '• Sin regalos';
 
+  const pdvDisplay = r.pdv === 'Otros' && r.pdvOtros ? 'Otros: ' + r.pdvOtros : (r.pdv || '—');
+
   const txt =
 `🔴 *RICH · CIERRE DE JORNADA*
 ━━━━━━━━━━━━━━━━━━
 👤 *Promotor:* ${r.nombre}
 🆔 *Documento:* ${r.documento}
 🏙 *Ciudad:* ${r.ciudad}
-🏪 *PDV:* ${r.pdv}
+🏪 *PDV:* ${pdvDisplay}
 📍 *Ubicación:* ${r.ubicacion || 'Sin GPS'}
 🕐 *Cierre:* ${formatHora(new Date())}
 ${r.fotoUrl ? '📷 *Foto ingreso:* ' + r.fotoUrl : ''}
@@ -1142,17 +1162,42 @@ function fallbackCopy(txt) {
   document.body.removeChild(ta);
 }
 
-// ═══════════════ CERRAR JORNADA ═══════════════
-function cerrarJornada() {
-  if (!confirm('¿Seguro que deseas cerrar la jornada? Se reiniciará la aplicación.')) return;
-  STATE.step = 1; STATE.sessionId = null; STATE.registrado = false;
-  STATE.registro = { nombre:"", documento:"", ciudad:"", pdv:"", ubicacion:"", lat:null, lng:null, fotoBase64:"", fotoSize:0, fotoUrl:"", fechaHora:"" };
+// ═══════════════ CERRAR SESIÓN (con registro de salida) ═══════════════
+async function cerrarJornada() {
+  if (!confirm('¿Seguro que deseas cerrar la sesión? Se registrará tu hora de salida.')) return;
+
+  // Si hay sesión activa, registrar salida en Sheets
+  if (STATE.sessionId) {
+    showOverlay('Registrando salida...', 'Guardando hora de cierre');
+    try {
+      await postJson('registrarSalida', {
+        sessionId:            STATE.sessionId,
+        nombre:               STATE.registro.nombre,
+        ciudad:               STATE.registro.ciudad,
+        pdv:                  STATE.registro.pdv === 'Otros' && STATE.registro.pdvOtros ? STATE.registro.pdvOtros : STATE.registro.pdv,
+        totalVentas:          sumMap(STATE.ventas),
+        totalDegustaciones:   sumMap(STATE.degustaciones),
+        totalRegalos:         sumMap(STATE.regalos),
+        observaciones:        ''
+      });
+    } catch (e) {
+      // Si falla el registro de salida, igual se resetea la app
+      console.warn('No se pudo registrar salida:', e.message);
+    }
+    hideOverlay();
+  }
+
+  // Reset completo
+  STATE.step = 1; STATE.sessionId = null; STATE.registrado = false; STATE.cierrePOSTado = false;
+  STATE.registro = { nombre:"", documento:"", ciudad:"", pdv:"", pdvOtros:"", ubicacion:"", lat:null, lng:null, fotoBase64:"", fotoSize:0, fotoUrl:"", fechaHora:"" };
   STATE.ventas = {}; STATE.degustaciones = {}; STATE.regalos = {};
-  document.getElementById('f-nombre').value = "";
-  document.getElementById('f-doc').value = "";
-  document.getElementById('f-ciudad').value = "";
+  document.getElementById('f-nombre').value  = "";
+  document.getElementById('f-doc').value     = "";
+  document.getElementById('f-ciudad').value  = "";
   document.getElementById('f-pdv').innerHTML = '<option value="">Selecciona ciudad primero</option>';
-  document.getElementById('f-pdv').disabled = true;
+  document.getElementById('f-pdv').disabled  = true;
+  document.getElementById('f-pdv-otros').value = "";
+  document.getElementById('otros-wrap').classList.add('hidden');
   clearFoto();
   obtenerUbicacion();
   document.getElementById('btn-enviar').disabled = false;
@@ -1160,7 +1205,7 @@ function cerrarJornada() {
   document.getElementById('btn-enviar').style.background = '';
   renderListas();
   goToStep(1);
-  toast('Jornada cerrada · Listo para nuevo registro', 'ok');
+  toast('✓ Sesión cerrada · Salida registrada', 'ok');
 }
 
 // ═══════════════ HELPERS ═══════════════
